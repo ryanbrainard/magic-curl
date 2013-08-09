@@ -1,7 +1,8 @@
 #!/bin/sh
 
 . ${BUILDPACK_TEST_RUNNER_HOME}/lib/test_utils.sh
-cache_dir=$(sed '/^\#/d' ${BUILDPACK_TEST_RUNNER_HOME}/lib/magic_curl/conf/cache.conf | grep 'cache_dir'  | tail -n 1 | cut -d "=" -f2-)
+MAGIC_CURL_HOME=${MAGIC_CURL_HOME?"MAGIC_CURL_HOME not specified"}
+cache_dir=$($MAGIC_CURL_HOME/bin/magic-curl-cache)
 url="http://repo1.maven.org/maven2/com/force/api/force-wsc/23.0.0/force-wsc-23.0.0.jar"
 cached_file="${cache_dir}/repo1.maven.org/maven2/com/force/api/force-wsc/23.0.0/force-wsc-23.0.0.jar"
 cached_file_md5="57e2997c35da552ede220f118d1fa941"
@@ -16,7 +17,7 @@ successfulCaching()
   fi
   assertFalse "[ -f ${cached_file} ]"
 
-  capture ${BUILDPACK_TEST_RUNNER_HOME}/lib/magic_curl/bin/curl ${curl_args}
+  capture ${MAGIC_CURL_HOME}/bin/curl ${curl_args}
 
   assertTrue "[ -f ${cached_file} ]"
   assertFileMD5 "${cached_file_md5}" ${cached_file}
@@ -79,7 +80,7 @@ testDownloadWithRemoteNameArgFollowedByOtherArgs()
 
 testNoArgs()
 {
-  capture ${BUILDPACK_TEST_RUNNER_HOME}/lib/magic_curl/bin/curl
+  capture ${MAGIC_CURL_HOME}/bin/curl
   
   assertEquals "" "$(cat ${STD_OUT})"
   assertEquals "curl: try 'curl --help' or 'curl --manual' for more information" "$(cat ${STD_ERR})"
@@ -88,7 +89,7 @@ testNoArgs()
 
 testNoUrl()
 {
-  capture ${BUILDPACK_TEST_RUNNER_HOME}/lib/magic_curl/bin/curl --silent
+  capture ${MAGIC_CURL_HOME}/bin/curl --silent
   
   assertEquals "" "$(cat ${STD_OUT})"
   assertContains "curl: no URL specified!" "$(cat ${STD_ERR})"
@@ -97,7 +98,7 @@ testNoUrl()
 
 test403WithFail()
 {
-  capture ${BUILDPACK_TEST_RUNNER_HOME}/lib/magic_curl/bin/curl http://s3.amazonaws.com/heroku-jvm-langpack-scala/sbt-xxxx.boot.properties --fail   
+  capture ${MAGIC_CURL_HOME}/bin/curl http://s3.amazonaws.com/heroku-jvm-langpack-scala/sbt-xxxx.boot.properties --fail   
   
   assertEquals "" "$(cat ${STD_OUT})"
   assertContains "curl: (22) The requested URL returned error: 403" "$(cat ${STD_ERR})"

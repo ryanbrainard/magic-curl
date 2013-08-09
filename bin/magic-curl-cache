@@ -1,0 +1,10 @@
+#!/bin/sh
+
+dir=${MAGIC_CURL_CACHE:-"/tmp/magic_curl_cache"}
+
+if [ -e $dir ] && [ ! -d $dir ]; then
+  echo "error: Magic Curl cache must be a directory" >&2
+  exit 1
+fi
+
+echo $dir
