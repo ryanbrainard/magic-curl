@@ -1,7 +1,5 @@
 #!/bin/sh
 
-set -e
-
 cache_dir=$($(dirname ${0})/magic-curl-cache)
 
 # find the real curl cmd
